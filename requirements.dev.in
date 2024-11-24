@@ -1,5 +1,5 @@
 -r requirements.in
-black
+black==19.10b0
 pytest
-isort
+isort==5.12.0
 pre-commit
