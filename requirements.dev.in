@@ -2,3 +2,4 @@
 black
 pytest
 isort
+pre-commit
