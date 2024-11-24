@@ -21,6 +21,9 @@ class Info(models.Model):
     description = models.TextField()
     days_per_week = models.IntegerField(choices=DaysPerWeek)
 
+    def __str__(self):
+        return f"{self.name}"  # Or any other representation you prefer
+
     class Meta:
         verbose_name = "Program"
 
@@ -37,6 +40,12 @@ class Day(models.Model):
         if self.week > self.program.weeks:
             raise ValidationError("Week Exceeds weeks in program")
 
+    class Meta:
+        verbose_name = "Program Day"
+
+    def __str__(self):
+        return f"{self.program.name} - {self.week}.{self.day}"
+
 
 class Exercise(models.Model):
     day = models.ForeignKey(Day, on_delete=models.CASCADE)
@@ -44,3 +53,9 @@ class Exercise(models.Model):
     reps = models.PositiveSmallIntegerField()
     sets = models.PositiveSmallIntegerField()
     rpe_percentage = models.FloatField()
+
+    class Meta:
+        verbose_name = "Program Exercise"
+
+    def __str__(self):
+        return f"{self.day.program.name} - {self.day.week}.{self.day.day} - {self.exercise.name}"
