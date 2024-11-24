@@ -21,6 +21,9 @@ class Info(models.Model):
     description = models.TextField()
     days_per_week = models.IntegerField(choices=DaysPerWeek)
 
+    class Meta:
+        verbose_name = "Program"
+
 
 class Day(models.Model):
     program = models.ForeignKey(Info, on_delete=models.CASCADE)
