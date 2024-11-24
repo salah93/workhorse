@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
@@ -12,7 +13,6 @@ class DaysPerWeek(models.IntegerChoices):
     SEVEN = 7
 
 
-# Create your models here.
 class Info(models.Model):
     name = models.CharField(max_length=200)
     weeks = models.PositiveSmallIntegerField(
@@ -20,3 +20,16 @@ class Info(models.Model):
     )
     description = models.TextField()
     days_per_week = models.IntegerField(choices=DaysPerWeek)
+
+
+class Day(models.Model):
+    program = models.ForeignKey(Info, on_delete=models.CASCADE)
+    week = models.PositiveSmallIntegerField()
+    day = models.IntegerField(choices=DaysPerWeek)
+    notes = models.TextField()
+
+    def clean(self):
+        if self.day > self.program.days_per_week:
+            raise ValidationError("Day Exceeds days per week in program")
+        if self.week > self.program.weeks:
+            raise ValidationError("Week Exceeds weeks in program")
