@@ -53,13 +53,7 @@ class Exercise(models.Model):
     reps = models.PositiveSmallIntegerField()
     sets = models.PositiveSmallIntegerField()
     rpe_percentage = models.FloatField()
-    superset = models.ForeignKey(
-        "program.Exercise",
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name="childset",
-    )
+    is_superset = models.BooleanField(default=False)
     order = models.PositiveSmallIntegerField()
 
     class Meta:
