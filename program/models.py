@@ -53,9 +53,18 @@ class Exercise(models.Model):
     reps = models.PositiveSmallIntegerField()
     sets = models.PositiveSmallIntegerField()
     rpe_percentage = models.FloatField()
+    superset = models.ForeignKey(
+        "program.Exercise",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="childset",
+    )
+    order = models.PositiveSmallIntegerField()
 
     class Meta:
         verbose_name = "Program Exercise"
+        unique_together = ("day", "order")
 
     def __str__(self):
         return f"{self.day.program.name} - {self.day.week}.{self.day.day} - {self.exercise.name}"
