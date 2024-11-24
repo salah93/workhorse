@@ -33,3 +33,11 @@ class Day(models.Model):
             raise ValidationError("Day Exceeds days per week in program")
         if self.week > self.program.weeks:
             raise ValidationError("Week Exceeds weeks in program")
+
+
+class Exercise(models.Model):
+    day = models.ForeignKey(Day, on_delete=models.CASCADE)
+    exercise = models.ForeignKey("exercise.Info", on_delete=models.PROTECT)
+    reps = models.PositiveSmallIntegerField()
+    sets = models.PositiveSmallIntegerField()
+    rpe_percentage = models.FloatField()
