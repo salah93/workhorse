@@ -1,3 +1,7 @@
 from django.contrib import admin
 
-# Register your models here.
+from .models import BodyPart, Category, Info
+
+admin.site.register(BodyPart)
+admin.site.register(Category)
+admin.site.register(Info)
