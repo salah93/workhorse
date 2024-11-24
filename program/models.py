@@ -13,7 +13,7 @@ class DaysPerWeek(models.IntegerChoices):
 
 
 # Create your models here.
-class Program(models.Model):
+class Info(models.Model):
     name = models.CharField(max_length=200)
     weeks = models.PositiveSmallIntegerField(
         validators=[MinValueValidator(4), MaxValueValidator(16)]
