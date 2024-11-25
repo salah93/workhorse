@@ -28,8 +28,8 @@ class Info(models.Model):
     class Meta:
         verbose_name = "Program"
 
-    def save(self):
-        super().save()
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
         days = {(r.week, r.day) for r in self.day_set.all()}
         for w in range(1, self.weeks + 1):
             for d in range(1, self.days_per_week + 1):
@@ -46,12 +46,12 @@ class Day(models.Model):
     day = models.IntegerField(choices=DaysPerWeek)
     notes = models.TextField(null=True, blank=True)
 
-    def save(self):
+    def save(self, *args, **kwargs):
         if self.day > self.program.days_per_week:
             raise ValidationError("Day Exceeds days per week in program")
         if self.week > self.program.weeks:
             raise ValidationError("Week Exceeds weeks in program")
-        super().save()
+        super().save(*args, **kwargs)
 
     class Meta:
         verbose_name = "Program Day"

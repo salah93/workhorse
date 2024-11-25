@@ -14,7 +14,11 @@ def make_strongapp_template_for_day(modeladmin, request, queryset):
 
 
 class DayAdminInline(admin.TabularInline):
+    fields = ["notes"]
     model = Day
+
+    def has_add_permission(self, request, obj):
+        return False
 
 
 @admin.register(Info)
