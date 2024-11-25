@@ -2,14 +2,18 @@ from django.db import models
 
 
 class Category(models.Model):
-    name = models.CharField(max_length=50, unique=True)
+    name = models.CharField(
+        max_length=50, unique=True, verbose_name="Category"
+    )
 
     def __str__(self):
         return f"{self.name}"
 
 
 class BodyPart(models.Model):
-    name = models.CharField(max_length=50, unique=True)
+    name = models.CharField(
+        max_length=50, unique=True, verbose_name="Body Part"
+    )
 
     def __str__(self):
         return f"{self.name}"
