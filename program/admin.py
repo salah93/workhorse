@@ -35,5 +35,9 @@ class ExerciseInline(admin.TabularInline):
 
 @admin.register(Day)
 class DayAdmin(admin.ModelAdmin):
+    search_fields = ["program__name"]
     inlines = [ExerciseInline]
     actions = [make_strongapp_template_for_day]
+
+    def has_add_permission(self, request):
+        return False
