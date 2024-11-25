@@ -42,6 +42,7 @@ class Day(models.Model):
 
     class Meta:
         verbose_name = "Program Day"
+        unique_together = ("program", "week", "day")
 
     def __str__(self):
         return f"{self.program.name} - {self.week}.{self.day}"
