@@ -1,6 +1,7 @@
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+from django.db.models import Q
 
 
 class DaysPerWeek(models.IntegerChoices):
@@ -34,6 +35,9 @@ class Info(models.Model):
             for d in range(1, self.days_per_week + 1):
                 if (w, d) not in days:
                     Day.objects.create(program=self, week=w, day=d)
+        self.day_set.filter(
+            Q(week__gt=self.weeks) | Q(day__gt=self.days_per_week)
+        ).delete()
 
 
 class Day(models.Model):
@@ -42,11 +46,12 @@ class Day(models.Model):
     day = models.IntegerField(choices=DaysPerWeek)
     notes = models.TextField(null=True, blank=True)
 
-    def clean(self):
+    def save(self):
         if self.day > self.program.days_per_week:
             raise ValidationError("Day Exceeds days per week in program")
         if self.week > self.program.weeks:
             raise ValidationError("Week Exceeds weeks in program")
+        super().save()
 
     class Meta:
         verbose_name = "Program Day"
