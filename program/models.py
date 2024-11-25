@@ -27,12 +27,20 @@ class Info(models.Model):
     class Meta:
         verbose_name = "Program"
 
+    def save(self):
+        super().save()
+        days = {(r.week, r.day) for r in self.day_set.all()}
+        for w in range(1, self.weeks + 1):
+            for d in range(1, self.days_per_week + 1):
+                if (w, d) not in days:
+                    Day.objects.create(program=self, week=w, day=d)
+
 
 class Day(models.Model):
     program = models.ForeignKey(Info, on_delete=models.CASCADE)
     week = models.PositiveSmallIntegerField()
     day = models.IntegerField(choices=DaysPerWeek)
-    notes = models.TextField()
+    notes = models.TextField(null=True, blank=True)
 
     def clean(self):
         if self.day > self.program.days_per_week:
