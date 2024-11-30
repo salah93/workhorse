@@ -90,6 +90,10 @@ class Exercise(models.Model):
             (9.5, 9.5),
             (10, 10),
         ],
+        null=True,
+    )
+    rpe_percentage = models.FloatField(
+        validators=[MinValueValidator(60), MaxValueValidator(100)], null=True
     )
     is_superset = models.BooleanField(default=False)
     order = models.PositiveSmallIntegerField()
@@ -97,6 +101,12 @@ class Exercise(models.Model):
     class Meta:
         verbose_name = "Program Exercise"
         unique_together = ("day", "order")
+
+    def clean(self):
+        if self.rpe and self.rpe_percentage:
+            raise ValidationError(
+                "Only one of rpe or rpe_percentage can be filled."
+            )
 
     def __str__(self):
         return f"{self.day.program.name} - {self.day.week}.{self.day.day} - {self.exercise.name}"
@@ -200,4 +210,8 @@ class Exercise(models.Model):
                 0.74,
             ],
         }
-        return rpe_map[self.rpe][self.reps - 1]
+        return (
+            self.rpe_percentage / 100
+            if self.rpe_percentage
+            else rpe_map[self.rpe][self.reps - 1]
+        )
