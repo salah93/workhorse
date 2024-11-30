@@ -31,6 +31,7 @@ class InfoAdmin(admin.ModelAdmin):
 
 class ExerciseInline(admin.TabularInline):
     model = Exercise
+    autocomplete_fields = ["exercise"]
 
 
 @admin.register(Day)
