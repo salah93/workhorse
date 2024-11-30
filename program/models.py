@@ -14,6 +14,19 @@ class DaysPerWeek(models.IntegerChoices):
     SEVEN = 7
 
 
+class Reps(models.IntegerChoices):
+    ONE = 1
+    TWO = 2
+    THREE = 3
+    FOUR = 4
+    FIVE = 5
+    SIX = 6
+    SEVEN = 7
+    EIGHT = 8
+    NINE = 9
+    TEN = 10
+
+
 class Info(models.Model):
     name = models.CharField(max_length=200, unique=True)
     weeks = models.PositiveSmallIntegerField(
@@ -64,12 +77,19 @@ class Day(models.Model):
 class Exercise(models.Model):
     day = models.ForeignKey(Day, on_delete=models.CASCADE)
     exercise = models.ForeignKey("exercise.Info", on_delete=models.PROTECT)
-    reps = models.PositiveSmallIntegerField(
-        validators=[MinValueValidator(1), MaxValueValidator(10)]
-    )
+    reps = models.PositiveSmallIntegerField(choices=Reps)
     sets = models.PositiveSmallIntegerField()
     rpe = models.FloatField(
-        validators=[MinValueValidator(6.5), MaxValueValidator(10)]
+        choices=[
+            (6.5, 6.5),
+            (7, 7),
+            (7.5, 7.5),
+            (8, 8),
+            (8.5, 8.5),
+            (9, 9),
+            (9.5, 9.5),
+            (10, 10),
+        ],
     )
     is_superset = models.BooleanField(default=False)
     order = models.PositiveSmallIntegerField()
