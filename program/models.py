@@ -64,9 +64,13 @@ class Day(models.Model):
 class Exercise(models.Model):
     day = models.ForeignKey(Day, on_delete=models.CASCADE)
     exercise = models.ForeignKey("exercise.Info", on_delete=models.PROTECT)
-    reps = models.PositiveSmallIntegerField()
+    reps = models.PositiveSmallIntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(10)]
+    )
     sets = models.PositiveSmallIntegerField()
-    rpe_percentage = models.FloatField()
+    rpe = models.FloatField(
+        validators=[MinValueValidator(6.5), MaxValueValidator(10)]
+    )
     is_superset = models.BooleanField(default=False)
     order = models.PositiveSmallIntegerField()
 
@@ -76,3 +80,104 @@ class Exercise(models.Model):
 
     def __str__(self):
         return f"{self.day.program.name} - {self.day.week}.{self.day.day} - {self.exercise.name}"
+
+    def get_rpe_percentage(self):
+        rpe_map = {
+            6.5: [
+                0.88,
+                0.85,
+                0.82,
+                0.80,
+                0.77,
+                0.75,
+                0.72,
+                0.69,
+                0.67,
+                0.64,
+            ],
+            7: [
+                0.89,
+                0.86,
+                0.84,
+                0.81,
+                0.79,
+                0.76,
+                0.74,
+                0.71,
+                0.68,
+                0.65,
+            ],
+            7.5: [
+                0.91,
+                0.88,
+                0.85,
+                0.82,
+                0.80,
+                0.77,
+                0.75,
+                0.72,
+                0.69,
+                0.67,
+            ],
+            8: [
+                0.92,
+                0.89,
+                0.86,
+                0.84,
+                0.81,
+                0.79,
+                0.76,
+                0.74,
+                0.71,
+                0.68,
+            ],
+            8.5: [
+                0.94,
+                0.91,
+                0.88,
+                0.85,
+                0.82,
+                0.80,
+                0.77,
+                0.75,
+                0.72,
+                0.69,
+            ],
+            9: [
+                0.96,
+                0.92,
+                0.89,
+                0.86,
+                0.84,
+                0.81,
+                0.79,
+                0.76,
+                0.74,
+                0.71,
+            ],
+            9.5: [
+                0.98,
+                0.94,
+                0.91,
+                0.88,
+                0.85,
+                0.82,
+                0.80,
+                0.77,
+                0.75,
+                0.72,
+            ],
+            10: [
+                1,
+                0.96,
+                0.92,
+                0.89,
+                0.86,
+                0.84,
+                0.81,
+                0.79,
+                0.76,
+                0.74,
+            ],
+        }
+        return rpe_map[self.rpe][self.reps - 1]
