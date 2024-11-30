@@ -5,7 +5,6 @@ class Category(models.Model):
     name = models.CharField(
         max_length=50, unique=True, verbose_name="Category"
     )
-    hevy_template_id = models.CharField(max_length=10, unique=True, null=True)
 
     def __str__(self):
         return f"{self.name}"
@@ -15,7 +14,6 @@ class BodyPart(models.Model):
     name = models.CharField(
         max_length=50, unique=True, verbose_name="Body Part"
     )
-    hevy_template_id = models.CharField(max_length=10, unique=True, null=True)
 
     def __str__(self):
         return f"{self.name}"
