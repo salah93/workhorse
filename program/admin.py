@@ -35,6 +35,7 @@ class ExerciseInline(admin.TabularInline):
 
 @admin.register(Day)
 class DayAdmin(admin.ModelAdmin):
+    readonly_fields = ["program", "week", "day"]
     search_fields = ["program__name"]
     inlines = [ExerciseInline]
     actions = [make_strongapp_template_for_day]
