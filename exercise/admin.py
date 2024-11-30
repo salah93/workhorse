@@ -7,6 +7,7 @@ from .models import BodyPart, Category, Info
 class InfoAdmin(admin.ModelAdmin):
     search_fields = ["name"]
     list_filter = ["category__name", "body_part__name"]
+    readonly_fields = ["hevy_template_id"]
 
 
 admin.site.register(BodyPart)
