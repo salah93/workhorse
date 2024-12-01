@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
@@ -42,16 +43,24 @@ class Program(models.Model):
     def __str__(self):
         return f"{self.user.username} - {self.program}"
 
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        for day in self.program.day_set.all():
+            ProgramDayV2.objects.get_or_create(user=self, program_day=day)
 
-class ProgramDay(models.Model):
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE
-    )
+
+class ProgramDayV2(models.Model):
+    user_program = models.ForeignKey(Program, on_delete=models.CASCADE)
     program_day = models.ForeignKey("program.Day", on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = "User Program Day"
-        unique_together = [("user", "program_day")]
+        unique_together = [("user_program", "program_day")]
 
     def __str__(self):
         return f"{self.user.username} - {self.program_day}"
+
+    def save(self, *args, **kwargs):
+        if self.user_program.program != self.program_day.program:
+            raise ValidationError("Programs do not match")
+        super().save(*args, **kwargs)

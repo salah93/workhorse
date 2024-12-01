@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from user.models import Profile1RM, Program, ProgramDay
+from user.models import Profile1RM, Program, ProgramDayV2
 
 
 @admin.action(description="Create Templates for Program")
@@ -24,7 +24,16 @@ class ProgramAdmin(admin.ModelAdmin):
     actions = [make_hevy_templates_for_program]
 
 
-@admin.register(ProgramDay)
+@admin.register(ProgramDayV2)
 class ProgramDayAdmin(admin.ModelAdmin):
     search_fields = ["user__username"]
     actions = [make_hevy_templates_for_program_day]
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
