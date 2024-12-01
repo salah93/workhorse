@@ -1,6 +1,11 @@
 from django.contrib import admin
 
-from user.models import Profile1RM, Program, ProgramDayV2
+from user.models import (
+    Profile1RM,
+    Program,
+    ProgramDayExerciseRPEOveride,
+    ProgramDayV2,
+)
 
 
 @admin.action(description="Create Templates for Program")
@@ -37,3 +42,12 @@ class ProgramDayAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         return False
+
+
+@admin.register(ProgramDayExerciseRPEOveride)
+class ProgramDayExerciseRPEOverideAdmin(admin.ModelAdmin):
+    search_fields = [
+        "day__user_program__user__username",
+        "exercise__day__program__name",
+    ]
+    autocomplete_fields = ["day"]
