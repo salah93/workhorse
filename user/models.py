@@ -20,3 +20,9 @@ class Profile1RM(models.Model):
     safety_squat_bar = models.SmallIntegerField(
         validators=[MinValueValidator(70), MaxValueValidator(600)]
     )
+
+    class Meta:
+        verbose_name = "Profile"
+
+    def __str__(self):
+        return f"{self.user.username}"
