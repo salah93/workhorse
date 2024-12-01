@@ -40,4 +40,4 @@ class Program(models.Model):
         unique_together = [("user", "program")]
 
     def __str__(self):
-        return f"{self.user.username}"
+        return f"{self.user.username} - {self.program.name}"
