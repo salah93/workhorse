@@ -46,19 +46,22 @@ class Program(models.Model):
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
         for day in self.program.day_set.all():
-            ProgramDayV2.objects.get_or_create(user=self, program_day=day)
+            ProgramDayV2.objects.get_or_create(
+                user_program=self, program_day=day
+            )
 
 
 class ProgramDayV2(models.Model):
     user_program = models.ForeignKey(Program, on_delete=models.CASCADE)
     program_day = models.ForeignKey("program.Day", on_delete=models.CASCADE)
+    routine_link = models.CharField(max_length=100, null=True)
 
     class Meta:
         verbose_name = "User Program Day"
         unique_together = [("user_program", "program_day")]
 
     def __str__(self):
-        return f"{self.user.username} - {self.program_day}"
+        return f"{self.user_program.user.username} - {self.program_day}"
 
     def save(self, *args, **kwargs):
         if self.user_program.program != self.program_day.program:
