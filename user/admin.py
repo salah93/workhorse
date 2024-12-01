@@ -1,10 +1,15 @@
 from django.contrib import admin
 
-from user.models import Profile1RM, Program
+from user.models import Profile1RM, Program, ProgramDay
 
 
 @admin.action(description="Create Templates for Program")
-def make_strongapp_templates_for_program(modeladmin, request, queryset):
+def make_hevy_templates_for_program(modeladmin, request, queryset):
+    pass
+
+
+@admin.action(description="Create Template for Program Day")
+def make_hevy_templates_for_program_day(modeladmin, request, queryset):
     pass
 
 
@@ -16,4 +21,10 @@ class ProfileAdmin(admin.ModelAdmin):
 @admin.register(Program)
 class ProgramAdmin(admin.ModelAdmin):
     search_fields = ["user__username"]
-    actions = [make_strongapp_templates_for_program]
+    actions = [make_hevy_templates_for_program]
+
+
+@admin.register(ProgramDay)
+class ProgramDayAdmin(admin.ModelAdmin):
+    search_fields = ["user__username"]
+    actions = [make_hevy_templates_for_program_day]

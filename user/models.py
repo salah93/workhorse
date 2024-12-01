@@ -40,4 +40,18 @@ class Program(models.Model):
         unique_together = [("user", "program")]
 
     def __str__(self):
-        return f"{self.user.username} - {self.program.name}"
+        return f"{self.user.username} - {self.program}"
+
+
+class ProgramDay(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE
+    )
+    program_day = models.ForeignKey("program.Day", on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name = "User Program Day"
+        unique_together = [("user", "program_day")]
+
+    def __str__(self):
+        return f"{self.user.username} - {self.program_day}"
