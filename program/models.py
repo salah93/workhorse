@@ -91,11 +91,15 @@ class Exercise(models.Model):
             (10, 10),
         ],
         null=True,
+        blank=True,
     )
     rpe_percentage = models.FloatField(
-        validators=[MinValueValidator(60), MaxValueValidator(100)], null=True
+        validators=[MinValueValidator(60), MaxValueValidator(100)],
+        null=True,
+        blank=True,
     )
     is_superset = models.BooleanField(default=False)
+    notes = models.TextField(null=True, blank=True)
     order = models.PositiveSmallIntegerField()
 
     class Meta:
