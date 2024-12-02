@@ -1,11 +1,6 @@
 from django.contrib import admin
 
-from user.models import (
-    Profile1RM,
-    Program,
-    ProgramDayExerciseRPEOveride,
-    ProgramDayV2,
-)
+from user.models import ExerciseRPEOveride, Profile1RM, Program, ProgramDayV2
 
 
 @admin.action(description="Create Templates for Program")
@@ -44,10 +39,7 @@ class ProgramDayAdmin(admin.ModelAdmin):
         return False
 
 
-@admin.register(ProgramDayExerciseRPEOveride)
-class ProgramDayExerciseRPEOverideAdmin(admin.ModelAdmin):
-    search_fields = [
-        "day__user_program__user__username",
-        "exercise__day__program__name",
-    ]
-    autocomplete_fields = ["day"]
+@admin.register(ExerciseRPEOveride)
+class ExerciseRPEOverideAdmin(admin.ModelAdmin):
+    search_fields = ["user"]
+    autocomplete_fields = ["user", "exercise"]

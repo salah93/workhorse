@@ -69,14 +69,14 @@ class ProgramDayV2(models.Model):
         super().save(*args, **kwargs)
 
 
-class ProgramDayExerciseRPEOveride(models.Model):
-    day = models.ForeignKey(ProgramDayV2, on_delete=models.CASCADE)
-    exercise = models.ForeignKey("program.Exercise", on_delete=models.CASCADE)
+class ExerciseRPEOveride(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE
+    )
+    exercise = models.ForeignKey("exercise.Info", on_delete=models.CASCADE)
     override_rpe_percentage = models.FloatField(
         validators=[MinValueValidator(60), MaxValueValidator(100)],
     )
 
-    def save(self, *args, **kwargs):
-        if self.day != self.exercise.day:
-            raise ValidationError("Programs do not match")
-        super().save(*args, **kwargs)
+    def __str__(self):
+        return f"{self.user.username}"
