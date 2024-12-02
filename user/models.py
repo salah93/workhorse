@@ -3,6 +3,18 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+from requests import Session
+from requests.adapters import HTTPAdapter
+from urllib3.util import Retry
+
+HEVY_API_HOST = "https://api.hevyapp.com"
+
+
+def get_session():
+    session = Session()
+    retries = Retry(total=3, backoff_factor=0.1)
+    session.mount("https://", HTTPAdapter(max_retries=retries))
+    return session
 
 
 class Profile1RM(models.Model):
@@ -51,6 +63,30 @@ class Program(models.Model):
                 user_program=self, program_day=day
             )
 
+    def make_hevy_folder(self):
+        session = get_session()
+        success = True
+        if self.hevy_routine_folder_id is None:
+            response = session.post(
+                f"{HEVY_API_HOST}/v1/routine_folders",
+                json={"routine_folder": {"title": str(self.program)}},
+                headers={
+                    "accept": "application/json",
+                    "api-key": settings.HEVY_API_KEY,
+                },
+            )
+            success = response.status_code == 201
+            if success:
+                self.hevy_routine_folder_id = response.json()[
+                    "routine_folder"
+                ]["id"]
+                self.save()
+        return success
+
+    def make_hevy_routines(self):
+        for day in self.programdayv2_set.all():
+            day.make_hevy_routine()
+
 
 class ProgramDayV2(models.Model):
     user_program = models.ForeignKey(Program, on_delete=models.CASCADE)
@@ -68,6 +104,50 @@ class ProgramDayV2(models.Model):
         if self.user_program.program != self.program_day.program:
             raise ValidationError("Programs do not match")
         super().save(*args, **kwargs)
+
+    def make_hevy_routine(self):
+        session = get_session()
+        success = True
+        if self.hevy_routine_id is None:
+            exercises = [
+                {
+                    "exercise_template_id": "D04AC939",
+                    "superset_id": None,
+                    "rest_seconds": 90,
+                    "notes": "Stay slow and controlled.",
+                    "sets": [
+                        {
+                            "type": "normal",
+                            "weight_kg": 100,
+                            "reps": 10,
+                            "distance_meters": None,
+                            "duration_seconds": None,
+                        }
+                    ],
+                }
+            ]
+            response = session.post(
+                f"{HEVY_API_HOST}/v1/routines",
+                json={
+                    "routine": {
+                        "title": str(self.program_day),
+                        "folder_id": self.user_program.hevy_routine_folder_id,
+                        "notes": self.program_day.notes,
+                        "exercises": exercises,
+                    }
+                },
+                headers={
+                    "accept": "application/json",
+                    "api-key": settings.HEVY_API_KEY,
+                },
+            )
+            success = response.status_code == 201
+            if success:
+                self.hevy_routine_folder_id = response.json()[
+                    "routine_folder"
+                ]["id"]
+                self.save()
+        return success
 
 
 class ExerciseRPEOveride(models.Model):
