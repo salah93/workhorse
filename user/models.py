@@ -35,9 +35,7 @@ class Program(models.Model):
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE
     )
     program = models.ForeignKey("program.Info", on_delete=models.CASCADE)
-    hevy_routine_folder_id = models.CharField(
-        max_length=10, unique=True, null=True
-    )
+    hevy_routine_folder_id = models.IntegerField(unique=True, null=True)
 
     class Meta:
         verbose_name = "User Program"
@@ -57,7 +55,7 @@ class Program(models.Model):
 class ProgramDayV2(models.Model):
     user_program = models.ForeignKey(Program, on_delete=models.CASCADE)
     program_day = models.ForeignKey("program.Day", on_delete=models.CASCADE)
-    routine_link = models.CharField(max_length=100, null=True, unique=True)
+    hevy_routine_id = models.CharField(max_length=100, null=True, unique=True)
 
     class Meta:
         verbose_name = "User Program Day"
