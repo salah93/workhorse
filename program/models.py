@@ -21,9 +21,6 @@ class Info(models.Model):
     )
     description = models.TextField()
     days_per_week = models.IntegerField(choices=DaysPerWeek)
-    hevy_routine_folder_id = models.CharField(
-        max_length=10, unique=True, null=True
-    )
 
     def __str__(self):
         return f"{self.name}"  # Or any other representation you prefer
@@ -48,7 +45,6 @@ class Day(models.Model):
     week = models.PositiveSmallIntegerField()
     day = models.IntegerField(choices=DaysPerWeek)
     notes = models.TextField(null=True, blank=True)
-    hevy_routine_id = models.CharField(max_length=10, unique=True, null=True)
 
     def save(self, *args, **kwargs):
         if self.day > self.program.days_per_week:

@@ -22,11 +22,13 @@ class ProfileAdmin(admin.ModelAdmin):
 class ProgramAdmin(admin.ModelAdmin):
     search_fields = ["user__username"]
     actions = [make_hevy_templates_for_program]
+    readonly_fields = ["hevy_routine_folder_id"]
 
 
 @admin.register(ProgramDayV2)
 class ProgramDayAdmin(admin.ModelAdmin):
     search_fields = ["user__username"]
+    readonly_fields = ["routine_link"]
     actions = [make_hevy_templates_for_program_day]
 
     def has_add_permission(self, request):

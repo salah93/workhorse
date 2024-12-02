@@ -14,7 +14,6 @@ class DayAdminInline(admin.TabularInline):
 @admin.register(Info)
 class InfoAdmin(admin.ModelAdmin):
     fields = ["name", ("weeks", "days_per_week"), "description"]
-    readonly_fields = ["hevy_routine_folder_id"]
     list_display = ["name"]
     inlines = [DayAdminInline]
 
@@ -26,7 +25,7 @@ class ExerciseInline(admin.TabularInline):
 
 @admin.register(Day)
 class DayAdmin(admin.ModelAdmin):
-    readonly_fields = ["program", "week", "day", "hevy_routine_id"]
+    readonly_fields = ["program", "week", "day"]
     search_fields = ["program__name"]
     ordering = ["program__name", "week", "day"]
     inlines = [ExerciseInline]
