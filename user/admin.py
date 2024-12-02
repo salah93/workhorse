@@ -37,21 +37,22 @@ class ProgramAdmin(admin.ModelAdmin):
         session = get_session()
         incomplete_programs = []
         for program in queryset:
-            response = session.post(
-                f"{HEVY_API_HOST}/v1/routine_folders",
-                data={"routine_folder": {"title": str(program.program)}},
-                headers={
-                    "accept": "application/json",
-                    "api-key": settings.HEVY_API_KEY,
-                },
-            )
-            if response.status_code != 201:
-                incomplete_programs.append(program)
-            else:
-                program.hevy_routine_folder_id = response.json()[
-                    "routine_folder"
-                ]["id"]
-                program.save()
+            if program.hevy_routine_folder_id is None:
+                response = session.post(
+                    f"{HEVY_API_HOST}/v1/routine_folders",
+                    json={"routine_folder": {"title": str(program.program)}},
+                    headers={
+                        "accept": "application/json",
+                        "api-key": settings.HEVY_API_KEY,
+                    },
+                )
+                if response.status_code != 201:
+                    incomplete_programs.append(program)
+                else:
+                    program.hevy_routine_folder_id = response.json()[
+                        "routine_folder"
+                    ]["id"]
+                    program.save()
         if len(incomplete_programs):
             self.message_user(
                 request,
