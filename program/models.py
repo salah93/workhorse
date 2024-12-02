@@ -14,19 +14,6 @@ class DaysPerWeek(models.IntegerChoices):
     SEVEN = 7
 
 
-class Reps(models.IntegerChoices):
-    ONE = 1
-    TWO = 2
-    THREE = 3
-    FOUR = 4
-    FIVE = 5
-    SIX = 6
-    SEVEN = 7
-    EIGHT = 8
-    NINE = 9
-    TEN = 10
-
-
 class Info(models.Model):
     name = models.CharField(max_length=200, unique=True)
     weeks = models.PositiveSmallIntegerField(
@@ -77,8 +64,12 @@ class Day(models.Model):
 class Exercise(models.Model):
     day = models.ForeignKey(Day, on_delete=models.CASCADE)
     exercise = models.ForeignKey("exercise.Info", on_delete=models.PROTECT)
-    reps = models.PositiveSmallIntegerField(choices=Reps)
-    sets = models.PositiveSmallIntegerField()
+    reps = models.PositiveSmallIntegerField(
+        choices=zip(range(1, 21), range(1, 21))
+    )
+    sets = models.PositiveSmallIntegerField(
+        choices=zip(range(1, 51), range(1, 51))
+    )
     rpe = models.FloatField(
         choices=[
             (6.5, 6.5),
@@ -217,5 +208,5 @@ class Exercise(models.Model):
         return (
             self.rpe_percentage / 100
             if self.rpe_percentage
-            else rpe_map[self.rpe][self.reps - 1]
+            else rpe_map[self.rpe][min(self.reps, 10) - 1]
         )
