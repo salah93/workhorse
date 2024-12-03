@@ -92,6 +92,9 @@ class Exercise(models.Model):
     is_superset = models.BooleanField(default=False)
     notes = models.TextField(null=True, blank=True)
     order = models.PositiveSmallIntegerField()
+    rest = models.PositiveSmallIntegerField(
+        validators=[MinValueValidator(30), MaxValueValidator(600)], null=True
+    )
 
     class Meta:
         verbose_name = "Program Exercise"
