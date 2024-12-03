@@ -208,8 +208,9 @@ class Exercise(models.Model):
                 0.74,
             ],
         }
-        return (
-            self.rpe_percentage / 100
-            if self.rpe_percentage
-            else rpe_map[self.rpe][min(self.reps, 10) - 1]
-        )
+        if self.rpe_percentage:
+            return self.rpe_percentage / 100
+        elif self.rpe:
+            return rpe_map[self.rpe][min(self.reps, 10) - 1]
+        else:
+            return None

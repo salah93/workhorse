@@ -98,45 +98,69 @@ class ProgramDayV2(models.Model):
     def make_hevy_routine(self):
         session = get_session()
         success = True
-        if self.hevy_routine_id is None:
-            exercises = [
+        exercises = []
+        for exercise in self.program_day.exercise_set.all():
+            rpe_percentage = exercise.get_rpe_percentage()
+            try:
+                weight = (
+                    (
+                        rpe_percentage
+                        * self.user_program.user.profile1rm_set.filter(
+                            exercise=exercise.exercise
+                        ).first()
+                    )
+                    if rpe_percentage is not None
+                    else None
+                )
+            except ValueError:
+                # TODO: add warning log that we're missing data
+                weight = None
+            exercises.append(
                 {
-                    "exercise_template_id": "D04AC939",
+                    "exercise_template_id": exercise.exercise.hevy_template_id,
                     "superset_id": None,
-                    "rest_seconds": 90,
-                    "notes": "Stay slow and controlled.",
+                    "rest_seconds": exercise.rest,
+                    "notes": exercise.notes,
                     "sets": [
                         {
                             "type": "normal",
-                            "weight_kg": 100,
-                            "reps": 10,
+                            "weight_kg": weight,
+                            "reps": exercise.reps,
                             "distance_meters": None,
                             "duration_seconds": None,
                         }
+                        for _ in range(exercise.sets)
                     ],
                 }
-            ]
+            )
+        data = {
+            "routine": {
+                "title": str(self.program_day),
+                "folder_id": self.user_program.hevy_routine_folder_id,
+                "notes": self.program_day.notes,
+                "exercises": exercises,
+            }
+        }
+        headers = {
+            "accept": "application/json",
+            "api-key": settings.HEVY_API_KEY,
+        }
+        if self.hevy_routine_id is None:
             response = session.post(
                 f"{HEVY_API_HOST}/v1/routines",
-                json={
-                    "routine": {
-                        "title": str(self.program_day),
-                        "folder_id": self.user_program.hevy_routine_folder_id,
-                        "notes": self.program_day.notes,
-                        "exercises": exercises,
-                    }
-                },
-                headers={
-                    "accept": "application/json",
-                    "api-key": settings.HEVY_API_KEY,
-                },
+                json=data,
+                headers=headers,
             )
-            success = response.status_code == 201
-            if success:
-                self.hevy_routine_folder_id = response.json()[
-                    "routine_folder"
-                ]["id"]
-                self.save()
+        else:
+            response = session.put(
+                f"{HEVY_API_HOST}/v1/routines/{self.hevy_routine_id}",
+                json=data,
+                headers=headers,
+            )
+        new_success = response.status_code == 201
+        if new_success:
+            self.hevy_routine_id = response.json()["id"]
+            self.save()
         return success
 
 
