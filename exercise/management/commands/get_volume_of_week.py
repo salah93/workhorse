@@ -67,6 +67,6 @@ class Command(BaseCommand):
 
             self.stdout.write(
                 self.style.SUCCESS(
-                    f"Total volume = {total * 2.2}lb, - {len(workouts)} workouts"
+                    f"Total volume = {total * 2.2} lb, - {len(workouts)} workouts"
                 )
             )
