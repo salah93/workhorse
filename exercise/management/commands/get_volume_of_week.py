@@ -20,23 +20,22 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         LIMIT = 5
 
-        weeks_complete = 0
+        curr_week = 1
         prev_weeks_workouts = []
-        while weeks_complete < options["weeks"]:
-            weeks_complete += 1
+        while curr_week <= options["weeks"]:
             now = arrow.utcnow().replace(hour=0, minute=0)
-            start = now.shift(weekday=options["start"], weeks=-weeks_complete)
+            start = now.shift(weekday=options["start"], weeks=-curr_week)
             end = start.shift(days=7)
             if end >= now:
                 end = now
             self.stdout.write(
                 self.style.NOTICE(
-                    f"fetching for week {weeks_complete} {start.date()} to {end.date()}"
+                    f"fetching for week {curr_week} {start.date()} to {end.date()}"
                 )
             )
 
             response = requests.get(
-                f"https://api.hevyapp.com/v1/workouts?page={weeks_complete}&pageSize={LIMIT}",
+                f"https://api.hevyapp.com/v1/workouts?page={curr_week}&pageSize={LIMIT}",
                 headers={
                     "accept": "application/json",
                     "api-key": settings.HEVY_API_KEY,
@@ -47,6 +46,7 @@ class Command(BaseCommand):
                     "got bad response %s" % response.status_code
                 )
 
+            curr_week += 1
             workouts = [
                 w
                 for w in response.json()["workouts"] + prev_weeks_workouts
