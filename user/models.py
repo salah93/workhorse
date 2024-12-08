@@ -96,35 +96,36 @@ class ProgramDayV2(models.Model):
         super().save(*args, **kwargs)
 
     def make_hevy_routine(self):
-        session = get_session()
         success = True
         exercises = []
         for exercise in self.program_day.exercise_set.all():
             rpe_percentage = exercise.get_rpe_percentage()
-            try:
-                weight = (
-                    (
-                        rpe_percentage
-                        * self.user_program.user.profile1rm_set.filter(
-                            exercise=exercise.exercise
-                        ).first()
-                    )
-                    if rpe_percentage is not None
-                    else None
+            rm = self.user_program.user.profile1rm_set.filter(
+                exercise=exercise.exercise
+            ).first()
+            if rm is None:
+                raise ValueError(f"missing 1rm for {exercise}")
+            weight_kg = (
+                (rpe_percentage * rm.weight) / 2.2
+                if rpe_percentage is not None
+                else None
+            )
+            if weight_kg:
+                notes = (
+                    f" - aim for {weight_kg * 2.2} lb for {exercise.reps} reps"
                 )
-            except ValueError:
-                # TODO: add warning log that we're missing data
-                weight = None
+            else:
+                notes = f" - aim for {exercise.reps} reps"
             exercises.append(
                 {
                     "exercise_template_id": exercise.exercise.hevy_template_id,
                     "superset_id": None,
                     "rest_seconds": exercise.rest,
-                    "notes": exercise.notes,
+                    "notes": exercise.notes + notes,
                     "sets": [
                         {
                             "type": "normal",
-                            "weight_kg": weight,
+                            "weight_kg": weight_kg,
                             "reps": exercise.reps,
                             "distance_meters": None,
                             "duration_seconds": None,
@@ -133,6 +134,7 @@ class ProgramDayV2(models.Model):
                     ],
                 }
             )
+        session = get_session()
         data = {
             "routine": {
                 "title": str(self.program_day),
