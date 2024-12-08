@@ -23,8 +23,10 @@ class Command(BaseCommand):
         curr_week = 1
         prev_weeks_workouts = []
         while curr_week <= options["weeks"]:
-            now = arrow.utcnow().replace(hour=0, minute=0)
-            start = now.shift(weekday=options["start"], weeks=-curr_week)
+            now = arrow.utcnow()
+            start = now.shift(
+                weekday=options["start"], weeks=-curr_week
+            ).replace(hour=0, minute=0)
             end = start.shift(days=7)
             if end >= now:
                 end = now
