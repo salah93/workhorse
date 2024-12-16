@@ -101,28 +101,25 @@ class ProgramDayV2(models.Model):
         exercises = []
         for exercise in self.program_day.exercise_set.order_by("order").all():
             rpe_percentage = exercise.get_rpe_percentage()
-            rm = self.user_program.user.profile1rm_set.filter(
-                exercise=exercise.exercise
-            ).first()
-            if rpe_percentage is not None and rm is None:
-                raise ValueError(f"missing 1rm for {exercise}")
-            weight_kg = (
-                (rpe_percentage * rm.weight) / 2.2
-                if rpe_percentage is not None
-                else None
-            )
-            if weight_kg:
+            if rpe_percentage:
+                rm = self.user_program.user.profile1rm_set.filter(
+                    exercise=exercise.exercise
+                ).first()
+                if rm is None:
+                    raise ValueError(f"missing 1rm for {exercise}")
+                weight_kg = (rpe_percentage * rm.weight) / 2.2
                 notes = (
-                    f" - aim for {rpe_percentage}% lb for {exercise.reps} reps"
+                    f"Aim for {exercise.reps} reps at {rpe_percentage:.2f}%."
                 )
             else:
-                notes = f" - aim for {exercise.reps} reps"
+                weight_kg = None
+                notes = f"Aim for {exercise.reps} reps."
             exercises.append(
                 {
                     "exercise_template_id": exercise.exercise.hevy_template_id,
                     "superset_id": None,
                     "rest_seconds": exercise.rest,
-                    "notes": exercise.notes + notes,
+                    "notes": "\n".join([exercise.notes, notes]),
                     "sets": [
                         {
                             "type": "normal",
