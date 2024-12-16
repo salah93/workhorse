@@ -113,7 +113,7 @@ class ProgramDayV2(models.Model):
             )
             if weight_kg:
                 notes = (
-                    f" - aim for {weight_kg * 2.2} lb for {exercise.reps} reps"
+                    f" - aim for {rpe_percentage}% lb for {exercise.reps} reps"
                 )
             else:
                 notes = f" - aim for {exercise.reps} reps"
