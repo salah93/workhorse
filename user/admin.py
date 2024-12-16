@@ -6,6 +6,7 @@ from user.models import ExerciseRPEOveride, Profile1RM, Program, ProgramDayV2
 @admin.register(Profile1RM)
 class ProfileAdmin(admin.ModelAdmin):
     search_fields = ["user__username"]
+    autocomplete_fields = ["user", "exercise"]
 
 
 @admin.register(Program)
