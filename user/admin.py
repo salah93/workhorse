@@ -23,7 +23,13 @@ class ProgramAdmin(admin.ModelAdmin):
             if not success:
                 incomplete_programs.append(program)
             else:
-                program.make_hevy_routines()
+                try:
+                    success = program.make_hevy_routines()
+                    if not success:
+                        incomplete_programs.append(program)
+                except ValueError as e:
+                    incomplete_programs.append(program)
+                    self.message_user(request, e.args[0], messages.ERROR)
         if len(incomplete_programs):
             self.message_user(
                 request,
@@ -54,7 +60,11 @@ class ProgramDayAdmin(admin.ModelAdmin):
     def make_hevy_template_for_program_day(self, request, queryset):
         incomplete_routines = []
         for day in queryset:
-            success = day.make_hevy_routine()
+            try:
+                success = day.make_hevy_routine()
+            except ValueError as e:
+                incomplete_routines.append(day)
+                self.message_user(request, e.args[0], messages.ERROR)
             if not success:
                 incomplete_routines.append(day)
         if len(incomplete_routines):

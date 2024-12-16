@@ -74,8 +74,10 @@ class Program(models.Model):
         return success
 
     def make_hevy_routines(self):
+        success = True
         for day in self.programdayv2_set.all():
-            day.make_hevy_routine()
+            success = success and day.make_hevy_routine()
+        return success
 
 
 class ProgramDayV2(models.Model):
@@ -96,7 +98,6 @@ class ProgramDayV2(models.Model):
         super().save(*args, **kwargs)
 
     def make_hevy_routine(self):
-        success = True
         exercises = []
         for exercise in self.program_day.exercise_set.all():
             rpe_percentage = exercise.get_rpe_percentage()
@@ -159,11 +160,13 @@ class ProgramDayV2(models.Model):
                 json=data,
                 headers=headers,
             )
+        if response.status_code == 400:
+            raise ValueError(response.text)
         new_success = response.status_code == 201
         if new_success:
-            self.hevy_routine_id = response.json()["id"]
+            self.hevy_routine_id = response.json()["routine"][0]["id"]
             self.save()
-        return success
+        return response.status_code in (200, 201)
 
 
 class ExerciseRPEOveride(models.Model):
