@@ -99,7 +99,7 @@ class ProgramDayV2(models.Model):
 
     def make_hevy_routine(self):
         exercises = []
-        for exercise in self.program_day.exercise_set.all():
+        for exercise in self.program_day.exercise_set.order_by("order").all():
             rpe_percentage = exercise.get_rpe_percentage()
             rm = self.user_program.user.profile1rm_set.filter(
                 exercise=exercise.exercise
