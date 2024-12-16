@@ -140,7 +140,7 @@ class ProgramDayV2(models.Model):
             "routine": {
                 "title": str(self.program_day),
                 "folder_id": self.user_program.hevy_routine_folder_id,
-                "notes": self.program_day.notes,
+                "notes": self.program_day.notes or str(self.program_day),
                 "exercises": exercises,
             }
         }
