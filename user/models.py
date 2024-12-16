@@ -29,7 +29,7 @@ class Profile1RM(models.Model):
         verbose_name = "Profile"
 
     def __str__(self):
-        return f"{self.user.username}"
+        return f"{self.user.username} - {self.exercise}"
 
 
 class Program(models.Model):
