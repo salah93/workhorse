@@ -104,7 +104,7 @@ class ProgramDayV2(models.Model):
             rm = self.user_program.user.profile1rm_set.filter(
                 exercise=exercise.exercise
             ).first()
-            if rm is None:
+            if rpe_percentage is not None and rm is None:
                 raise ValueError(f"missing 1rm for {exercise}")
             weight_kg = (
                 (rpe_percentage * rm.weight) / 2.2
